@@ -1,0 +1,26 @@
+# API Keys and Environments
+.env
+.env.local
+.env.*
+
+# Python Cache and Virtual Environments
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# Large Video Assets and Temporary Downloads
+clips/
+temp_video_*.mp4
+
+# Local Test Inputs/Outputs (Mounted dynamically during container run)
+input/
+output/
+
+# OS System Files
+.DS_Store
+Thumbs.db
