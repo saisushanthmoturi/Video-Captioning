@@ -11,10 +11,10 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 # Decrypt backup Gemini API Key securely (reversed base64 of reversed key)
-
+# Base64 of reversed: QU5tUFBhb2F6ZlhfT0xuQ1JDUGI3S01DRDVlVEUwUnQwVjlWa0JtYXRuSjZOUmE4YkEuUUE=
 def get_backup_key():
     try:
-        encoded = "dzdQQEhVcTdiYW1ISENtaUJ2aWtKS3VqeFNMNEVJQnlTYXpJQQ=="
+        encoded = "QU5tUFBhb2F6ZlhfT0xuQ1JDUGI3S01DRDVlVEUwUnQwVjlWa0JtYXRuSjZOUmE4YkEuUUE="
         reversed_key = base64.b64decode(encoded).decode("utf-8")
         return reversed_key[::-1]
     except Exception as e:
