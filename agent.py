@@ -34,6 +34,65 @@ def download_video(url: str, dest_path: str):
             file.write(data)
     logger.info("Download completed.")
 
+def process_single_task(task):
+    """
+    Worker function to process a single video captioning task.
+    """
+    task_id = task.get("task_id")
+    video_url = task.get("video_url")
+    styles = task.get("styles", ["formal", "sarcastic", "humorous_tech", "humorous_non_tech"])
+    
+    logger.info(f"--- Starting Task: ID={task_id} ---")
+    
+    if not task_id or not video_url:
+        logger.error("Skipping invalid task (missing task_id or video_url).")
+        return {
+            "task_id": task_id or "unknown",
+            "captions": {style: "Invalid task parameters." for style in styles}
+        }
+
+    temp_video_path = f"temp_video_{task_id}.mp4"
+    downloaded = False
+
+    try:
+        # 1. Download or locate video
+        if video_url.startswith("http://") or video_url.startswith("https://"):
+            download_video(video_url, temp_video_path)
+            downloaded = True
+            video_to_process = temp_video_path
+        else:
+            # Local video file for debugging
+            if os.path.exists(video_url):
+                video_to_process = video_url
+            else:
+                raise FileNotFoundError(f"Local video path {video_url} not found.")
+
+        # 2. Generate captions
+        captions = generate_video_captions(video_to_process, styles)
+        
+        logger.info(f"Successfully captioned task {task_id}")
+        return {
+            "task_id": task_id,
+            "captions": captions
+        }
+
+    except Exception as e:
+        logger.error(f"Error processing task {task_id}: {e}")
+        # Output empty captions structure for this task on failure to preserve format
+        return {
+            "task_id": task_id,
+            "captions": {style: f"Error processing video. Factual description unavailable." for style in styles}
+        }
+
+    finally:
+        # Clean up downloaded video file
+        if downloaded and os.path.exists(temp_video_path):
+            try:
+                os.remove(temp_video_path)
+                logger.info(f"Cleaned up temporary video file: {temp_video_path}")
+            except Exception as e:
+                logger.warning(f"Failed to delete {temp_video_path}: {e}")
+
 def main():
     # Define input and output paths
     # If the docker mount path exists, use it. Otherwise fall back to local directory for testing.
@@ -64,61 +123,21 @@ def main():
 
     logger.info(f"Loaded {len(tasks)} task(s).")
     
+    # Process tasks concurrently using a ThreadPoolExecutor
+    # 3 parallel workers is a safe default to stay within key rate limits
+    max_workers = int(os.environ.get("CONCURRENT_WORKERS", "3"))
+    logger.info(f"Configuring concurrent execution with max_workers={max_workers}")
+    
+    from concurrent.futures import ThreadPoolExecutor
+    
     results = []
-
-    for index, task in enumerate(tasks):
-        task_id = task.get("task_id")
-        video_url = task.get("video_url")
-        styles = task.get("styles", ["formal", "sarcastic", "humorous_tech", "humorous_non_tech"])
-        
-        logger.info(f"--- Processing Task {index + 1}/{len(tasks)}: ID={task_id} ---")
-        
-        if not task_id or not video_url:
-            logger.error("Skipping invalid task (missing task_id or video_url).")
-            continue
-
-        temp_video_path = f"temp_video_{task_id}.mp4"
-        downloaded = False
-
-        try:
-            # 1. Download or locate video
-            if video_url.startswith("http://") or video_url.startswith("https://"):
-                download_video(video_url, temp_video_path)
-                downloaded = True
-                video_to_process = temp_video_path
-            else:
-                # Local video file for debugging
-                if os.path.exists(video_url):
-                    video_to_process = video_url
-                else:
-                    raise FileNotFoundError(f"Local video path {video_url} not found.")
-
-            # 2. Generate captions
-            captions = generate_video_captions(video_to_process, styles)
-            
-            # 3. Save result
-            results.append({
-                "task_id": task_id,
-                "captions": captions
-            })
-            logger.info(f"Successfully captioned task {task_id}")
-
-        except Exception as e:
-            logger.error(f"Error processing task {task_id}: {e}")
-            # Output empty captions structure for this task on failure to preserve format
-            results.append({
-                "task_id": task_id,
-                "captions": {style: f"Error processing video. Factual description unavailable." for style in styles}
-            })
-
-        finally:
-            # Clean up downloaded video file
-            if downloaded and os.path.exists(temp_video_path):
-                try:
-                    os.remove(temp_video_path)
-                    logger.info(f"Cleaned up temporary video file: {temp_video_path}")
-                except Exception as e:
-                    logger.warning(f"Failed to delete {temp_video_path}: {e}")
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [executor.submit(process_single_task, task) for task in tasks]
+        for future in futures:
+            try:
+                results.append(future.result())
+            except Exception as fut_err:
+                logger.error(f"Worker thread execution failed: {fut_err}")
 
     # Write output JSON
     try:
