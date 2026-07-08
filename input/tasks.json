@@ -1,0 +1,17 @@
+[
+  {
+    "task_id": "v1",
+    "video_url": "clips/v1.mp4",
+    "styles": ["formal", "sarcastic", "humorous_tech", "humorous_non_tech"]
+  },
+  {
+    "task_id": "v2",
+    "video_url": "clips/v2.mp4",
+    "styles": ["formal", "sarcastic", "humorous_tech", "humorous_non_tech"]
+  },
+  {
+    "task_id": "v3",
+    "video_url": "clips/v3.mp4",
+    "styles": ["formal", "sarcastic", "humorous_tech", "humorous_non_tech"]
+  }
+]

@@ -18,8 +18,8 @@ clips/
 temp_video_*.mp4
 
 # Local Test Inputs/Outputs (Mounted dynamically during container run)
-input/
-output/
+# input/
+# output/
 
 # OS System Files
 .DS_Store
