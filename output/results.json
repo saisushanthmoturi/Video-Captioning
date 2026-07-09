@@ -2,28 +2,28 @@
   {
     "task_id": "v1",
     "captions": {
-      "formal": "This time-lapse footage captures the dynamic flow of urban traffic on a multi-lane thoroughfare during daylight hours. Vehicles, including cars and buses, navigate the busy street, flanked by trees displaying vibrant autumn foliage. High-rise residential buildings and distant mountains complete the cityscape.",
-      "sarcastic": "Witness the breathtaking spectacle of vehicles engaging in their daily ritual of accelerating, decelerating, and occasionally pausing. This thrilling time-lapse documents the exhilarating urban ballet of cars, proving that every journey is a unique, high-speed adventure, especially during rush hour.",
-      "humorous_tech": "Observe this real-world simulation of concurrent processes attempting to access shared resources on a single-threaded server. Each vehicle is a data packet, trying to avoid a deadlock or a race condition, all while the garbage collector (traffic light) occasionally pauses execution.",
-      "humorous_non_tech": "Ah, peak efficiency! Everyone's either rushing to that crucial morning meeting or desperately trying to outrun their Monday responsibilities. It's like a real-life game of Frogger, but with significantly higher stakes and a much longer commute."
+      "formal": "This elevated view captures a bustling urban thoroughfare during autumn, characterized by heavy vehicular traffic flowing in multiple lanes. Vibrant yellow and green foliage lines the street, complementing the modern high-rise residential buildings in the background. The continuous movement of cars and buses signifies a typical city scene.",
+      "sarcastic": "Witness the thrilling spectacle of city traffic, where countless vehicles engage in their daily ritual of moving from one point to another, often at a pace that can only be described as 'leisurely.' The vibrant autumn trees are surely appreciating the exhaust fumes.",
+      "humorous_tech": "Looks like the main thread is experiencing some serious blocking I/O, causing a major bottleneck. All those processes are waiting on the same mutex, leading to a classic deadlock scenario. Someone forgot to optimize the traffic control algorithm before deployment.",
+      "humorous_non_tech": "Ah, rush hour. It's like a giant, slow-motion ballet where everyone is trying to be the lead dancer but keeps getting stuck behind the bus. At least the autumn leaves are putting on a better show than the traffic."
     }
   },
   {
     "task_id": "v2",
     "captions": {
-      "formal": "A small, fluffy orange kitten with light eyes is observed emerging from dense green foliage in a natural outdoor setting. The feline slowly approaches the viewer, its gaze fixed forward, showcasing its inquisitive nature in the dappled sunlight.",
-      "sarcastic": "Prepare yourselves, for a creature of immense fluff and questionable motives is making its grand entrance from the undergrowth. This tiny, orange menace, clearly on a mission of world domination or perhaps just a snack, is gracing us with its slow, deliberate approach.",
-      "humorous_tech": "Debugging in production can feel a lot like this. A tiny, unexpected process emerges from the background, demanding attention, and you just know it's about to introduce a new, adorable bug into your perfectly stable system. Hope it compiles without too many purr-ors.",
-      "humorous_non_tech": "My cat, plotting its next move to knock something off the counter, probably thinks it's being stealthy. This tiny orange fluffball is clearly on a recon mission, gathering intelligence before launching its full-scale adorable assault on my unsuspecting household."
+      "formal": "A small, fluffy orange kitten sits among green foliage and tree trunks, observing its surroundings. The kitten then slowly approaches the camera, its light-colored eyes focused. Sunlight filters through the leaves, casting dappled shadows on the ground, highlighting its cautious movement.",
+      "sarcastic": "Witness the thrilling saga of a tiny, ginger feline embarking on an epic journey of approximately one foot forward. This courageous kitten fearlessly navigates a perilous path of dirt and leaves, demonstrating unparalleled dedication to the art of slow-motion advancement.",
+      "humorous_tech": "This junior developer just pushed a new feature to production, cautiously approaching the logs to see if it compiled without errors. The intense stare suggests it's bracing for a 'catastrophic' bug report, or perhaps just a pending 'meow-ge' conflict.",
+      "humorous_non_tech": "My cat when I've just sat down with a hot cup of coffee and it decides it's time for a very important, very slow, and very deliberate inspection of my personal space. Clearly, it's plotting its next nap location."
     }
   },
   {
     "task_id": "v3",
     "captions": {
-      "formal": "A young Black woman is observed working diligently at a computer workstation within a modern office environment. She is actively typing on a keyboard, demonstrating focused engagement with her task. The setting includes contemporary lighting and green plants, indicating a professional workspace.",
-      "sarcastic": "Witness the thrilling spectacle of modern productivity as this individual bravely confronts the keyboard, valiantly entering data. Her unwavering gaze at the screen suggests she's either solving world hunger or, more likely, just replying to another email. Truly groundbreaking work.",
-      "humorous_tech": "She's debugging her life choices line by line, hoping to compile a stable version of her day. Each keystroke a commit, each blink a mental stack overflow. Clearly, she's trying to push her changes to the main branch before the daily stand-up.",
-      "humorous_non_tech": "That moment when you realize you've been typing for five minutes straight, and all you've managed to produce is a very detailed grocery list. Or perhaps she's just trying to remember her password for the fifth time today. The struggle is real."
+      "formal": "A young Black woman with her hair in a bun is seated at a white desk in a modern office setting. She is actively typing on a computer keyboard, focusing on the monitor. A black computer mouse and tangled wires are visible on the desk, with office plants and contemporary lighting in the background.",
+      "sarcastic": "Witness the thrilling spectacle of a professional engaged in the high-stakes activity of typing at a computer. Every keystroke is a testament to her unwavering dedication to... well, whatever mundane task is on her screen. The tangled wires add a touch of untamed excitement.",
+      "humorous_tech": "She's either debugging a critical production issue on a Friday afternoon or trying to compile a decade-old codebase with a new dependency. That intense stare suggests a serious 'merge conflict' with reality, especially with those chaotic cable management skills.",
+      "humorous_non_tech": "Her face perfectly captures the moment you realize you've typed an entire paragraph only to discover Caps Lock was on the whole time. Or perhaps she's just trying to remember her Wi-Fi password for the fifth time today. The struggle is real."
     }
   }
 ]
