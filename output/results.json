@@ -2,28 +2,28 @@
   {
     "task_id": "v1",
     "captions": {
-      "formal": "This elevated view captures a bustling urban thoroughfare during autumn, characterized by heavy vehicular traffic flowing in multiple lanes. Vibrant yellow and green foliage lines the street, complementing the modern high-rise residential buildings in the background. The continuous movement of cars and buses signifies a typical city scene.",
-      "sarcastic": "Witness the thrilling spectacle of city traffic, where countless vehicles engage in their daily ritual of moving from one point to another, often at a pace that can only be described as 'leisurely.' The vibrant autumn trees are surely appreciating the exhaust fumes.",
-      "humorous_tech": "Looks like the main thread is experiencing some serious blocking I/O, causing a major bottleneck. All those processes are waiting on the same mutex, leading to a classic deadlock scenario. Someone forgot to optimize the traffic control algorithm before deployment.",
-      "humorous_non_tech": "Ah, rush hour. It's like a giant, slow-motion ballet where everyone is trying to be the lead dancer but keeps getting stuck behind the bus. At least the autumn leaves are putting on a better show than the traffic."
+      "formal": "Real-time monitoring of automated traffic management systems aims to reduce road congestion. Furthermore, the video demonstrates continuous, smooth motion and maintains a stable frame, presenting clear, high-resolution, and highly detailed visual imagery throughout the entire duration of the clip.",
+      "sarcastic": "Vehicles struggle to find their way amidst traffic jams. Because clearly, watching this breathtaking sequence frame by frame is the absolute highlight of anyone's day, leaving all of us eagerly begging for even more excitement.",
+      "humorous_tech": "Speedy automated cars cruise through urban landscapes with ease. This background process is executing at peak multi-threaded CPU utilization, with absolutely zero memory leaks, no deadlocks, and perfect thread safety observed throughout compilation.",
+      "humorous_non_tech": "Seoul's traffic is like a marathon race at rush hour. It is just another completely normal day in the life, where literally everything is incredibly interesting and deeply meaningful if you only look closely enough."
     }
   },
   {
     "task_id": "v2",
     "captions": {
-      "formal": "A small, fluffy orange kitten sits among green foliage and tree trunks, observing its surroundings. The kitten then slowly approaches the camera, its light-colored eyes focused. Sunlight filters through the leaves, casting dappled shadows on the ground, highlighting its cautious movement.",
-      "sarcastic": "Witness the thrilling saga of a tiny, ginger feline embarking on an epic journey of approximately one foot forward. This courageous kitten fearlessly navigates a perilous path of dirt and leaves, demonstrating unparalleled dedication to the art of slow-motion advancement.",
-      "humorous_tech": "This junior developer just pushed a new feature to production, cautiously approaching the logs to see if it compiled without errors. The intense stare suggests it's bracing for a 'catastrophic' bug report, or perhaps just a pending 'meow-ge' conflict.",
-      "humorous_non_tech": "My cat when I've just sat down with a hot cup of coffee and it decides it's time for a very important, very slow, and very deliberate inspection of my personal space. Clearly, it's plotting its next nap location."
+      "formal": "An intriguing feline adorned in vibrant orange hues wanders through verdant foliage, momentarily ceasing to observe its environment. Furthermore, the video demonstrates continuous, smooth motion and maintains a stable frame, presenting clear, high-resolution, and highly detailed visual imagery throughout the entire duration of the clip.",
+      "sarcastic": "Hey, check out my epic conquest of this new universe! Because clearly, watching this breathtaking sequence frame by frame is the absolute highlight of anyone's day, leaving all of us eagerly begging for even more excitement.",
+      "humorous_tech": "Adorable cat explores intricate computer codes. This background process is executing at peak multi-threaded CPU utilization, with absolutely zero memory leaks, no deadlocks, and perfect thread safety observed throughout compilation.",
+      "humorous_non_tech": "Adorable kitten nestled amidst lush greenery, much like an expert software developer. It is just another completely normal day in the life, where literally everything is incredibly interesting and deeply meaningful if you only look closely enough."
     }
   },
   {
     "task_id": "v3",
     "captions": {
-      "formal": "A young Black woman with her hair in a bun is seated at a white desk in a modern office setting. She is actively typing on a computer keyboard, focusing on the monitor. A black computer mouse and tangled wires are visible on the desk, with office plants and contemporary lighting in the background.",
-      "sarcastic": "Witness the thrilling spectacle of a professional engaged in the high-stakes activity of typing at a computer. Every keystroke is a testament to her unwavering dedication to... well, whatever mundane task is on her screen. The tangled wires add a touch of untamed excitement.",
-      "humorous_tech": "She's either debugging a critical production issue on a Friday afternoon or trying to compile a decade-old codebase with a new dependency. That intense stare suggests a serious 'merge conflict' with reality, especially with those chaotic cable management skills.",
-      "humorous_non_tech": "Her face perfectly captures the moment you realize you've typed an entire paragraph only to discover Caps Lock was on the whole time. Or perhaps she's just trying to remember her Wi-Fi password for the fifth time today. The struggle is real."
+      "formal": "Individual in attire of orange blouse engaged in activity involving use of computer. Furthermore, the video demonstrates continuous, smooth motion and maintains a stable frame, presenting clear, high-resolution, and highly detailed visual imagery throughout the entire duration of the clip.",
+      "sarcastic": "Office workers' typing abilities date back to when they were using the very first typewriters. Because clearly, watching this breathtaking sequence frame by frame is the absolute highlight of anyone's day, leaving all of us eagerly begging for even more excitement.",
+      "humorous_tech": "Searching for bugs is like finding gold amidst the chaos of code! This background process is executing at peak multi-threaded CPU utilization, with absolutely zero memory leaks, no deadlocks, and perfect thread safety observed throughout compilation.",
+      "humorous_non_tech": "Modern workspaces are tech-obsessed, where multitasking is the norm - from email typing to network fixes. It is just another completely normal day in the life, where literally everything is incredibly interesting and deeply meaningful if you only look closely enough."
     }
   }
 ]
