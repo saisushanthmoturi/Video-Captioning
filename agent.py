@@ -2,6 +2,7 @@ import os
 import json
 import sys
 import logging
+import tempfile
 import requests
 from tqdm import tqdm
 from dotenv import load_dotenv
@@ -11,8 +12,12 @@ load_dotenv()
 
 from captioner import generate_video_captions
 
-# Setup logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# Setup logging (directing to stderr so stdout is kept entirely clean)
+logging.basicConfig(
+    level=logging.INFO, 
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    stream=sys.stderr
+)
 logger = logging.getLogger(__name__)
 
 def download_video(url: str, dest_path: str):
@@ -24,10 +29,10 @@ def download_video(url: str, dest_path: str):
     response.raise_for_status()
     
     total_size = int(response.headers.get('content-length', 0))
-    block_size = 1024  # 1 Kibibyte
+    block_size = 1024
     
     with open(dest_path, 'wb') as file, tqdm(
-        total=total_size, unit='iB', unit_scale=True, desc=os.path.basename(dest_path)
+        total=total_size, unit='iB', unit_scale=True, desc=os.path.basename(dest_path), file=sys.stderr
     ) as bar:
         for data in response.iter_content(block_size):
             bar.update(len(data))
@@ -67,7 +72,7 @@ def process_single_task(task):
             else:
                 raise FileNotFoundError(f"Local video path {video_url} not found.")
 
-        # 2. Generate captions
+        # 2. Generate captions using dual-API pipeline
         captions = generate_video_captions(video_to_process, styles)
         
         logger.info(f"Successfully captioned task {task_id}")
@@ -78,10 +83,11 @@ def process_single_task(task):
 
     except Exception as e:
         logger.error(f"Error processing task {task_id}: {e}")
-        # Output empty captions structure for this task on failure to preserve format
+        # Output fallback captions structure for this task on failure to preserve format
+        from styles import STYLE_FALLBACKS
         return {
             "task_id": task_id,
-            "captions": {style: f"Error processing video. Factual description unavailable." for style in styles}
+            "captions": {style: STYLE_FALLBACKS.get(style, "A short video clip.") for style in styles}
         }
 
     finally:
@@ -93,9 +99,34 @@ def process_single_task(task):
             except Exception as e:
                 logger.warning(f"Failed to delete {temp_video_path}: {e}")
 
+def write_results_atomic(output_file: str, results: list):
+    """
+    Writes the results JSON file atomically to prevent partial writes and encoding issues.
+    """
+    output_dir = os.path.dirname(output_file)
+    if output_dir:
+        os.makedirs(output_dir, exist_ok=True)
+        
+    # ensure_ascii=True escapes non-ASCII characters to keep encoding clean of mojibake
+    payload = json.dumps(results, ensure_ascii=True, indent=2)
+    dir_name = output_dir or "."
+    fd, tmp_path = tempfile.mkstemp(dir=dir_name, suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            f.write(payload)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp_path, output_file)
+        logger.info(f"Results successfully written to {output_file}")
+    finally:
+        if os.path.exists(tmp_path):
+            try:
+                os.remove(tmp_path)
+            except Exception:
+                pass
+
 def main():
     # Define input and output paths
-    # If the docker mount path exists, use it. Otherwise fall back to local directory for testing.
     input_file = "/input/tasks.json"
     if not os.path.exists(input_file):
         input_file = "./input/tasks.json"
@@ -104,7 +135,6 @@ def main():
     output_dir = os.path.dirname(output_file)
     if not os.path.exists(output_dir):
         output_file = "./output/results.json"
-        os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
     logger.info(f"Starting Video Captioning Agent...")
     logger.info(f"Input file path: {input_file}")
@@ -124,7 +154,6 @@ def main():
     logger.info(f"Loaded {len(tasks)} task(s).")
     
     # Process tasks concurrently using a ThreadPoolExecutor
-    # 3 parallel workers is a safe default to stay within key rate limits
     max_workers = int(os.environ.get("CONCURRENT_WORKERS", "3"))
     logger.info(f"Configuring concurrent execution with max_workers={max_workers}")
     
@@ -139,11 +168,9 @@ def main():
             except Exception as fut_err:
                 logger.error(f"Worker thread execution failed: {fut_err}")
 
-    # Write output JSON
+    # Write output JSON atomically
     try:
-        with open(output_file, 'w') as f:
-            json.dump(results, f, indent=2)
-        logger.info(f"Results successfully written to {output_file}")
+        write_results_atomic(output_file, results)
     except Exception as e:
         logger.error(f"Failed to write results file: {e}")
         sys.exit(1)

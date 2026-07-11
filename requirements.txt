@@ -1,10 +1,5 @@
 google-genai
+openai
 requests==2.32.5
 tqdm==4.67.1
 python-dotenv==1.0.1
-torch
-torchvision
-transformers>=4.45.0
-qwen-vl-utils
-accelerate
-sentencepiece
