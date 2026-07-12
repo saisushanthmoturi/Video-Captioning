@@ -99,7 +99,7 @@ def _probe_duration(video_path: str) -> Optional[float]:
         logger.warning(f"ffprobe duration probe failed: {e}")
         return None
 
-def extract_keyframes(video_path: str, work_dir: str, num_frames: int = 12) -> List[str]:
+def extract_keyframes(video_path: str, work_dir: str, num_frames: int = 20) -> List[str]:
     """
     Extracts up to num_frames downscaled JPEG frames from video using FFmpeg.
     """

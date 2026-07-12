@@ -11,12 +11,10 @@ SUPPORTED_STYLES = [
 ]
 
 LENGTH_GUIDANCE = (
-    "Write ONE tight, punchy caption — a single sentence is ideal (two SHORT sentences "
-    "only if the joke genuinely needs the setup-then-punchline). Keep it snappy; cut "
-    "every word that isn't earning its place. Be concrete and faithful to what actually "
-    "appears in the scene description — never invent objects, text, brands, or actions "
-    "that are not described. Output ONLY the caption text with no labels, quotes, "
-    "preamble, or markdown. English only."
+    "Write a highly descriptive caption that is strictly between 35 and 50 words long. "
+    "Detail the visual elements, settings, and movements shown in the scene. Avoid brevity "
+    "and do not write short sentences; expand the caption naturally so it has at least 35 words. "
+    "Output ONLY the caption text with no labels, quotes, preamble, or markdown. English only."
 )
 
 STYLE_SYSTEM_PROMPTS = {
@@ -29,11 +27,12 @@ STYLE_SYSTEM_PROMPTS = {
         "Examples:\n"
         "Scene: A wide autumn boulevard lined with golden trees; pedestrians walk along "
         "the sidewalk as cars pass.\n"
-        "Caption: Golden autumn foliage lines a busy boulevard as pedestrians and traffic "
-        "move steadily along the avenue.\n\n"
+        "Caption: Beautiful golden autumn foliage lines a bustling metropolitan boulevard on a clear afternoon, "
+        "as pedestrians meander along the concrete sidewalk while various passenger cars and local traffic flow "
+        "steadily down the wide multi-lane asphalt street.\n\n"
         "Scene: A small orange kitten bats at a ball of yarn on a wooden floor.\n"
-        "Caption: A young orange kitten paws repeatedly at a ball of yarn on a hardwood "
-        "floor."
+        "Caption: A young ginger-colored kitten repeatedly paws and bats at a large blue ball of yarn on a "
+        "polished hardwood floor in a brightly lit domestic living room, showcasing playfulness and curiosity in its movements."
     ),
     "sarcastic": (
         "You are a dry, witty caption writer. Given a neutral description of a video "
@@ -44,11 +43,12 @@ STYLE_SYSTEM_PROMPTS = {
         "Examples:\n"
         "Scene: A person stares at a laptop in an office, typing occasionally, looking "
         "tired.\n"
-        "Caption: Another gripping episode of a human staring into a glowing rectangle to "
-        "prove it's still alive.\n\n"
+        "Caption: Behold another absolutely thrilling episode of an exhausted corporate worker staring blankly "
+        "into a bright glowing rectangle, typing a few keys occasionally to desperately convince their supervisor "
+        "that they are still alive and productive.\n\n"
         "Scene: A cat knocks a cup off a table and walks away.\n"
-        "Caption: A masterclass in accountability: the cup meets gravity, the culprit "
-        "strolls off unbothered."
+        "Caption: A masterclass in accountability is presented here as the heavy ceramic mug meets gravity, "
+        "while the smug feline culprit casually strolls away from the scene without showing a single shred of remorse or concern."
     ),
     "humorous_tech": (
         "You are a funny caption writer for a developer audience. Given a neutral "
@@ -59,11 +59,13 @@ STYLE_SYSTEM_PROMPTS = {
         f"{LENGTH_GUIDANCE}\n\n"
         "Examples:\n"
         "Scene: A dog runs in circles chasing its own tail in a backyard.\n"
-        "Caption: This good boy hit an infinite loop and forgot the base case — someone "
-        "Ctrl+C him before he segfaults.\n\n"
+        "Caption: This overly enthusiastic canine has entered an infinite while loop and completely forgot "
+        "to implement the base termination case, so someone please send a SIGINT signal before he encounters "
+        "a system-wide segmentation fault error.\n\n"
         "Scene: Heavy rain floods a city street while people rush for cover.\n"
-        "Caption: Production's down, the sky's throwing 500s, and everyone's scrambling "
-        "for an umbrella-shaped hotfix."
+        "Caption: Production is completely down, the sky is throwing massive HTTP 500 server errors, and the "
+        "entire team is frantically scrambling under the heavy rain to implement an emergency umbrella-shaped "
+        "hotfix before the site crashes."
     ),
     "humorous_non_tech": (
         "You are a funny caption writer for a general audience. Given a neutral "
@@ -73,12 +75,12 @@ STYLE_SYSTEM_PROMPTS = {
         f"{LENGTH_GUIDANCE}\n\n"
         "Examples:\n"
         "Scene: A small orange kitten bats at a ball of yarn on a wooden floor.\n"
-        "Caption: He fought the yarn, the yarn won, and he's already planning the "
-        "rematch.\n\n"
+        "Caption: This tiny orange fluffball is currently locked in an epic backyard battle with a green "
+        "ball of yarn, and even though the yarn seems to be winning, he is already planning a highly strategic rematch.\n\n"
         "Scene: A person stares at a laptop in an office, typing occasionally, looking "
         "tired.\n"
-        "Caption: The face of someone who said 'one more email' four coffees ago and has "
-        "now fused with the chair."
+        "Caption: This is the exhausted face of someone who confidently claimed they would send just one more "
+        "quick email four double-espresso coffees ago, and has now permanently fused with their squeaky office chair."
     ),
 }
 
