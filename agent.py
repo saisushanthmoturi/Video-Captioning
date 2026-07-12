@@ -109,14 +109,16 @@ def write_results_atomic(output_file: str, results: list):
         
     # ensure_ascii=True escapes non-ASCII characters to keep encoding clean of mojibake
     payload = json.dumps(results, ensure_ascii=True, indent=2)
-    dir_name = output_dir or "."
-    fd, tmp_path = tempfile.mkstemp(dir=dir_name, suffix=".tmp")
+    # Write temp file in the container's local temp dir (always writable)
+    fd, tmp_path = tempfile.mkstemp(suffix=".tmp")
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as f:
             f.write(payload)
             f.flush()
             os.fsync(f.fileno())
-        os.replace(tmp_path, output_file)
+        # Use shutil.move to safely handle copy-and-rename across volume boundaries
+        import shutil
+        shutil.move(tmp_path, output_file)
         logger.info(f"Results successfully written to {output_file}")
     finally:
         if os.path.exists(tmp_path):

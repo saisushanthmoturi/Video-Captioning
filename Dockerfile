@@ -14,8 +14,8 @@ WORKDIR /app
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the agent and captioner scripts
-COPY agent.py captioner.py /app/
+# Copy the agent, captioner, and styles scripts
+COPY *.py /app/
 
 # Declare the input and output volume mount points
 VOLUME [ "/input", "/output" ]
