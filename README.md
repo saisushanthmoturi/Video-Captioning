@@ -1,93 +1,142 @@
 # Video Captioning Agent (Track 2)
+### High-Performance Multimodal Video Captioning Pipeline
 
-An autonomous, containerized AI agent developed for **Track 2: Video Captioning Agent** in the AMD Developer Hackathon.
-
-## Description
-
-The Video Captioning Agent is an automated AI pipeline built to watch short video clips (30 seconds to 2 minutes) and generate factual captions in four distinct tones: `formal`, `sarcastic`, `humorous_tech`, and `humorous_non_tech`. It reads task lists dynamically on startup, downloads the target videos, and writes the structured captions to an output results file before cleanly exiting.
-
-The pipeline is written in Python and uses the Google GenAI SDK to interface with the Gemini 2.5 Flash vision-language model. Video clips are uploaded to the Gemini File API and analyzed using custom system prompts and Pydantic schema validation to ensure the generated output is 100% valid JSON. The system features automatic retry logic for rate limits, post-generation word count checks (guaranteeing captions are strictly between 25 and 60 words), and cloud storage cleanup routines.
-
-For portability and security, the system reads credentials from a local `.env` configuration file and falls back to an obfuscated backup key to prevent sensitive credentials from leaking into public Docker registries. The agent is packaged within a slim Docker container compiled for the `linux/amd64` platform, enabling it to run seamlessly on the hackathon's automated evaluation environment within the 10-minute maximum runtime limit.
+An autonomous, containerized AI agent developed for **Track 2: Video Captioning Agent** in the **AMD Developer Hackathon: ACT II**.
 
 ---
 
-## Features
-- **Structured Output**: Enforced JSON schema generation utilizing Pydantic models.
-- **Defensive Length Verification**: Automatic filler/truncation adjustments to preserve strict 25-60 word limits.
-- **Secure Key Fallback**: Obfuscated credentials logic for registry compatibility.
-- **Quota Management**: Immediate cloud storage file deletion after task completion.
-- **Linux/amd64 Cross-Build**: Ready for deployment on AMD-powered high-performance computing clusters.
+## 🏗️ Architecture
 
----
+The agent is built around a two-stage multimodal pipeline designed for high performance, zero weight overhead, and resilience against rate limits and sandbox timeouts.
 
-## Directory Structure
-- `agent.py` — Orchestrates task execution, downloads video assets, and handles I/O.
-- `captioner.py` — Manages GenAI client initialization, file uploads, structured inference, and cleanup.
-- `Dockerfile` — Slim multi-platform container environment containing FFmpeg and Python dependencies.
-- `build.sh` — Helper shell script to build the image targeting the `linux/amd64` architecture.
-- `requirements.txt` — Python dependencies list.
-- `.env` — Local configuration file containing the API Key (ignored by Git).
-- `.gitignore` — Ignore rules for environments, cache folders, OS files, and heavy media.
-
----
-
-## Getting Started
-
-### Local Setup (Python)
-1. **Install Dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-2. **Configure Environment Variables**:
-   Create a `.env` file in the project root and add your Gemini API Key:
-   ```ini
-   GEMINI_API_KEY=your_google_ai_studio_api_key
-   GEMINI_MODEL=gemini-2.5-flash
-   ```
-3. **Configure Tasks**:
-   Define your tasks in `input/tasks.json`:
-   ```json
-   [
-     {
-       "task_id": "v1",
-       "video_url": "https://storage.googleapis.com/amd-hackathon-clips/1860079-uhd_2560_1440_25fps.mp4",
-       "styles": ["formal", "sarcastic", "humorous_tech", "humorous_non_tech"]
-     }
-   ]
-   ```
-4. **Execute Runner**:
-   ```bash
-   python agent.py
-   ```
-5. Check outputs in `output/results.json`.
-
----
-
-## Docker Setup
-
-### 1. Build the Image
-Build the container targeting `linux/amd64` (required for AMD clusters):
-```bash
-./build.sh
+```
+                  /input/tasks.json
+                         │
+                         ▼
+                  Local Video Path
+                         │
+                         ▼
+        ┌──────────────────────────────────┐
+        │  FFmpeg Keyframe Preprocessor    │
+        │  - Samples up to 20 keyframes    │
+        │  - Downscales frames to 768px    │
+        │  - Base64 encodes under 9MB      │
+        └────────────────┬─────────────────┘
+                         │
+                         ▼
+        ┌──────────────────────────────────┐
+        │ Stage 1: Multimodal Vision API   │
+        │ (Kimi-k2p6 or Gemini-2.5-Flash)  │
+        └────────────────┬─────────────────┘
+                         │
+                         ▼
+              Neutral Scene Description
+                         │
+         ┌───────────────┼───────────────┬───────────────┐
+         ▼               ▼               ▼               ▼
+     [formal]      [sarcastic]    [humorous_tech] [humorous_non_tech]
+         │               │               │               │
+         └───────────────┼───────────────┴───────────────┘
+                         │
+                         ▼
+        ┌──────────────────────────────────┐
+        │ Stage 2: Style Refinement &      │
+        │ Defensive Word-Count Repair      │
+        └────────────────┬─────────────────┘
+                         │
+                         ▼
+               /output/results.json
 ```
 
-### 2. Run the Container
-Mount your local task input and output directories:
+---
+
+## ✨ Features
+
+- **Dual-Provider Compatibility**: Automatically detects and leverages `GEMINI_API_KEY` (using Gemini 2.5 Flash via official `google-genai` SDK) or `FIREWORKS_API_KEY` (using Fireworks AI visual/text endpoints).
+- **FFmpeg Video Sampling**: Pre-extracts up to 20 keyframes downscaled to 768px via a local `ffmpeg` subprocess, bypassing heavy ML framework loaders like PyTorch and transformers (reducing container size from **6 GB to 100 MB**).
+- **Base64 Payload Budgeting**: Dynamically subsamples extracted keyframes if the base64 payload exceeds 9.0 MB, preventing API gateway errors.
+- **Robust Rate-Limit Recovery**: Employs an exponential backoff retry loop with randomized jitter to handle HTTP `429 Too Many Requests` (Resource Exhausted) errors cleanly.
+- **Strict Word-Limit Enforcement**: Enforces a strict 25–60 word limit on generated captions. If a model output violates constraints, it initiates a 2-attempt edit repair loop and applies formatting/truncation if needed.
+- **Docker-Safe Atomic Writing**: Saves output JSON using `shutil.move` from the container's writable internal `/tmp` directory, preventing permission crashes on host-mounted directories.
+- **Mojibake-Free Output**: Forces `ensure_ascii=True` when writing output to ensure pure-ASCII escaped characters, eliminating encoding/decoding errors for the judges.
+
+---
+
+## 📂 Repository Structure
+
+- [agent.py](file:///Users/moturisaisushanth/sushanth/amd-hackathon%20/agent.py) — Entrypoint orchestrator; downloads video files and schedules worker threads.
+- [captioner.py](file:///Users/moturisaisushanth/sushanth/amd-hackathon%20/captioner.py) — Video frame preprocessing, base64 budgeting, vision and text API calling, and retry wrappers.
+- [styles.py](file:///Users/moturisaisushanth/sushanth/amd-hackathon%20/styles.py) — Styling system prompts, few-shot examples, fillers, and fallbacks.
+- [Dockerfile](file:///Users/moturisaisushanth/sushanth/amd-hackathon%20/Dockerfile) — Packages the agent in a python-slim base, installing `ffmpeg`, python dependencies, and copying scripts.
+- [requirements.txt](file:///Users/moturisaisushanth/sushanth/amd-hackathon%20/requirements.txt) — Dependency list.
+
+---
+
+## 🚀 Running Locally
+
+### 1. Setup Environment
+Cloning and installing dependencies:
+```bash
+git clone https://github.com/saisushanthmoturi/Video-Captioning.git
+cd Video-Captioning
+pip install -r requirements.txt
+```
+
+### 2. Configure Environment Variables
+Create a `.env` file in the root directory:
+```ini
+# Google AI Studio Gemini API Key
+GEMINI_API_KEY=YOUR_GEMINI_API_KEY
+
+# Optional: Fireworks AI Keys (if preferred)
+# FIREWORKS_API_KEY=YOUR_FIREWORKS_API_KEY
+# VISION_MODEL=accounts/fireworks/models/kimi-k2p6
+# TEXT_MODEL=accounts/fireworks/models/glm-5p2
+
+# Thread Concurrency (set to 1 to prevent rate-limiting on free keys)
+CONCURRENT_WORKERS=1
+```
+
+### 3. Setup Task list
+Place your test video metadata in `input/tasks.json`:
+```json
+[
+  {
+    "task_id": "v1",
+    "video_url": "https://storage.googleapis.com/amd-hackathon-clips/1860079-uhd_2560_1440_25fps.mp4",
+    "styles": ["formal", "sarcastic", "humorous_tech", "humorous_non_tech"]
+  }
+]
+```
+
+### 4. Run the Agent
+```bash
+python agent.py
+```
+Check outputs in `output/results.json`.
+
+---
+
+## 🐳 Docker Deployment
+
+The agent is compiled for the `linux/amd64` architecture, making it ready to run on high-performance AMD computing platforms.
+
+### Running with Docker CLI
 ```bash
 docker run --rm \
-  -v $(pwd)/.env:/app/.env \
+  -e GEMINI_API_KEY=YOUR_GEMINI_API_KEY \
   -v $(pwd)/input:/input \
   -v $(pwd)/output:/output \
-  video-captioning-agent:latest
+  ghcr.io/saisushanthmoturi/video-captioning:latest
 ```
 
 ---
 
-## Submission & Publishing
+## 🏆 AMD Developer Hackathon Compliance
 
-To submit your agent, publish the image to your public registry of choice:
-```bash
-docker tag video-captioning-agent:latest <your_registry_username>/video-captioning-agent:latest
-docker push <your_registry_username>/video-captioning-agent:latest
-```
+This project complies fully with the Track 2 container interface:
+- Reads `/input/tasks.json` and parses task structures dynamically.
+- Gracefully handles local and remote download URLs.
+- Generates required captions for all 4 tones.
+- Writes `/output/results.json` atomically.
+- Returns code `0` on successful completion.
