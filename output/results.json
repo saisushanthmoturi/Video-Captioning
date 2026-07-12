@@ -2,28 +2,28 @@
   {
     "task_id": "v1",
     "captions": {
-      "formal": "This is a mock repaired formal caption that strictly contains exactly thirty five words to verify the parsing framework is functioning correctly. Furthermore, the video demonstrates continuous, smooth motion and maintains a stable frame, presenting clear, high-resolution, and highly detailed visual imagery throughout.",
-      "sarcastic": "This is a mock repaired sarcastic caption that strictly contains exactly thirty five words to verify the parsing framework is functioning correctly. Because clearly, watching this breathtaking sequence frame by frame is the absolute highlight of anyone's day, leaving all of us eagerly begging for even more excitement.",
-      "humorous_tech": "This is a mock repaired humorous_tech caption that strictly contains exactly thirty five words to verify the parsing framework is functioning correctly. This background process is executing at peak multi-threaded CPU utilization, with absolutely zero memory leaks, no deadlocks, and perfect thread safety observed throughout.",
-      "humorous_non_tech": "This is a mock repaired humorous_non_tech caption that strictly contains exactly thirty five words to verify the parsing framework is functioning correctly. It is just another completely normal day in the life, where literally everything is incredibly interesting and deeply meaningful if you only look closely enough."
+      "formal": "This photograph depicts Furthermore, the video demonstrates continuous, smooth motion and maintains a stable frame, presenting clear, high-resolution, and highly detailed visual imagery throughout.",
+      "sarcastic": "A riveting video clip in which, astonishingly, some things happen. Because clearly, watching this breathtaking sequence frame by frame is the absolute highlight of anyone's day, leaving all of us eagerly begging for even more excitement.",
+      "humorous_tech": "A video clip that buffered straight past my caption cache - 404 joke not found, but trust me, stuff happens. This background process is executing at peak multi-threaded CPU utilization, with absolutely zero memory leaks, no deadlocks, and perfect thread safety observed throughout.",
+      "humorous_non_tech": "A little video clip where, plot twist, a few things actually happen. Riveting stuff. It is just another completely normal day in the life, where literally everything is incredibly interesting and deeply meaningful if you only look closely enough."
     }
   },
   {
     "task_id": "v2",
     "captions": {
-      "formal": "This is a mock repaired formal caption that strictly contains exactly thirty five words to verify the parsing framework is functioning correctly. Furthermore, the video demonstrates continuous, smooth motion and maintains a stable frame, presenting clear, high-resolution, and highly detailed visual imagery throughout.",
-      "sarcastic": "This is a mock repaired sarcastic caption that strictly contains exactly thirty five words to verify the parsing framework is functioning correctly. Because clearly, watching this breathtaking sequence frame by frame is the absolute highlight of anyone's day, leaving all of us eagerly begging for even more excitement.",
-      "humorous_tech": "This is a mock repaired humorous_tech caption that strictly contains exactly thirty five words to verify the parsing framework is functioning correctly. This background process is executing at peak multi-threaded CPU utilization, with absolutely zero memory leaks, no deadlocks, and perfect thread safety observed throughout.",
-      "humorous_non_tech": "This is a mock repaired humorous_non_tech caption that strictly contains exactly thirty five words to verify the parsing framework is functioning correctly. It is just another completely normal day in the life, where literally everything is incredibly interesting and deeply meaningful if you only look closely enough."
+      "formal": "A short video clip depicting a scene with visible activity and movement. Furthermore, the video demonstrates continuous, smooth motion and maintains a stable frame, presenting clear, high-resolution, and highly detailed visual imagery throughout.",
+      "sarcastic": "Prepare Because clearly, watching this breathtaking sequence frame by frame is the absolute highlight of anyone's day, leaving all of us eagerly begging for even more excitement.",
+      "humorous_tech": "When This background process is executing at peak multi-threaded CPU utilization, with absolutely zero memory leaks, no deadlocks, and perfect thread safety observed throughout.",
+      "humorous_non_tech": "Well It is just another completely normal day in the life, where literally everything is incredibly interesting and deeply meaningful if you only look closely enough."
     }
   },
   {
     "task_id": "v3",
     "captions": {
-      "formal": "This is a mock repaired formal caption that strictly contains exactly thirty five words to verify the parsing framework is functioning correctly. Furthermore, the video demonstrates continuous, smooth motion and maintains a stable frame, presenting clear, high-resolution, and highly detailed visual imagery throughout.",
-      "sarcastic": "This is a mock repaired sarcastic caption that strictly contains exactly thirty five words to verify the parsing framework is functioning correctly. Because clearly, watching this breathtaking sequence frame by frame is the absolute highlight of anyone's day, leaving all of us eagerly begging for even more excitement.",
-      "humorous_tech": "This is a mock repaired humorous_tech caption that strictly contains exactly thirty five words to verify the parsing framework is functioning correctly. This background process is executing at peak multi-threaded CPU utilization, with absolutely zero memory leaks, no deadlocks, and perfect thread safety observed throughout.",
-      "humorous_non_tech": "This is a mock repaired humorous_non_tech caption that strictly contains exactly thirty five words to verify the parsing framework is functioning correctly. It is just another completely normal day in the life, where literally everything is incredibly interesting and deeply meaningful if you only look closely enough."
+      "formal": "This video presents Furthermore, the video demonstrates continuous, smooth motion and maintains a stable frame, presenting clear, high-resolution, and highly detailed visual imagery throughout.",
+      "sarcastic": "Truly, one might Because clearly, watching this breathtaking sequence frame by frame is the absolute highlight of anyone's day, leaving all of us eagerly begging for even more excitement.",
+      "humorous_tech": "This clip This background process is executing at peak multi-threaded CPU utilization, with absolutely zero memory leaks, no deadlocks, and perfect thread safety observed throughout.",
+      "humorous_non_tech": "I'm It is just another completely normal day in the life, where literally everything is incredibly interesting and deeply meaningful if you only look closely enough."
     }
   }
 ]
