@@ -39,7 +39,7 @@ except ImportError:
 
 # Model Configuration
 VISION_MODEL = os.getenv("VISION_MODEL", "accounts/fireworks/models/kimi-k2p6")
-TEXT_MODEL = os.getenv("TEXT_MODEL", "accounts/fireworks/models/gpt-oss-120b")
+TEXT_MODEL = os.getenv("TEXT_MODEL", "accounts/fireworks/models/glm-5p2")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 REASONING_EFFORT = os.getenv("REASONING_EFFORT", "none")
 
@@ -72,14 +72,14 @@ def _call_with_retry(func, *args, max_retries=5, base_delay=2.0, **kwargs):
         except Exception as e:
             e_str = str(e)
             logger.warning(f"API call attempt {attempt}/{max_retries} failed: {e_str}")
+            if attempt == max_retries:
+                raise e
             if "429" in e_str or "RESOURCE_EXHAUSTED" in e_str or "quota" in e_str.lower():
                 # Expback with a jitter between 0 and 1.5 seconds
                 sleep_time = delay + random.uniform(0.0, 1.5)
                 logger.info(f"Rate limit / quota hit. Retrying in {sleep_time:.2f}s...")
                 time.sleep(sleep_time)
                 delay *= 2.0
-            elif attempt == max_retries:
-                raise e
             else:
                 # Other transient errors: brief pause before retry
                 time.sleep(1.0)
