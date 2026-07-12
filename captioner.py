@@ -40,6 +40,7 @@ except ImportError:
 # Model Configuration
 VISION_MODEL = os.getenv("VISION_MODEL", "accounts/fireworks/models/kimi-k2p6")
 TEXT_MODEL = os.getenv("TEXT_MODEL", "accounts/fireworks/models/gpt-oss-120b")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 REASONING_EFFORT = os.getenv("REASONING_EFFORT", "none")
 
 # Vision prompt instruction
@@ -219,7 +220,7 @@ def run_vision_inference(b64_frames: List[str]) -> str:
     else:  # Use Gemini
         if genai is None:
             raise ImportError("google-genai package is not installed but GEMINI_API_KEY is configured.")
-        logger.info(f"Using Google GenAI Gemini backend: gemini-2.5-flash")
+        logger.info(f"Using Google GenAI Gemini backend: {GEMINI_MODEL}")
         client = genai.Client(api_key=gemini_key)
         
         parts = [VISION_INSTRUCTION]
@@ -233,7 +234,7 @@ def run_vision_inference(b64_frames: List[str]) -> str:
             
         resp = _call_with_retry(
             client.models.generate_content,
-            model="gemini-2.5-flash",
+            model=GEMINI_MODEL,
             contents=parts,
             config=types.GenerateContentConfig(
                 temperature=0.2,
@@ -276,7 +277,7 @@ def run_style_inference(style: str, description: str) -> str:
         
         resp = _call_with_retry(
             client.models.generate_content,
-            model="gemini-2.5-flash",
+            model=GEMINI_MODEL,
             contents=user_prompt,
             config=types.GenerateContentConfig(
                 system_instruction=system_prompt,
@@ -321,7 +322,7 @@ def run_style_repair(style: str, caption: str) -> str:
         client = genai.Client(api_key=gemini_key)
         resp = _call_with_retry(
             client.models.generate_content,
-            model="gemini-2.5-flash",
+            model=GEMINI_MODEL,
             contents=repair_prompt,
             config=types.GenerateContentConfig(
                 temperature=0.3,
@@ -347,6 +348,99 @@ def _clean_reasoning(text: str) -> str:
 # ---------------------------------------------------------------------------
 # Main Orchestration Entry Point
 # ---------------------------------------------------------------------------
+def run_combined_style_inference(description: str, requested_styles: list) -> dict:
+    """
+    Attempts to generate all requested styles in a single prompt to save tokens,
+    reduce latency, and avoid API rate limits.
+    """
+    if os.getenv("MOCK_INFERENCE") == "1":
+        return {style: f"This is a mock {style} caption designed to fulfill constraints." for style in requested_styles}
+
+    fireworks_key = os.getenv("FIREWORKS_API_KEY", "")
+    gemini_key = os.getenv("GEMINI_API_KEY", "")
+    
+    # Format guidelines for only requested styles
+    style_bullet_points = []
+    for style in requested_styles:
+        if style == "formal":
+            style_bullet_points.append("- formal: Professional, objective, clear, and informative. Describe setting and actions as for a documentary narrator. No humor or exclamation marks.")
+        elif style == "sarcastic":
+            style_bullet_points.append("- sarcastic: Dry, droll, and mocking. Highlight the mundane nature of the actions or exaggerate their context mockingly, while remaining completely faithful to visual facts.")
+        elif style == "humorous_tech":
+            style_bullet_points.append("- humorous_tech: Connect the video actions to software engineering, programming, compilers, databases, Git workflows, bugs, or developer culture. Be witty and tech-focused.")
+        elif style == "humorous_non_tech":
+            style_bullet_points.append("- humorous_non_tech: Warm, playful, everyday humor suitable for a general audience. Do not use IT or coding jargon.")
+            
+    style_list_str = "\n".join(style_bullet_points)
+    keys_str = ", ".join([f"'{s}'" for s in requested_styles])
+    
+    system_instruction = (
+        "You are an expert video description agent. Your job is to analyze the visual scene description "
+        f"and generate captions for the video in exactly the following styles: {keys_str}.\n\n"
+        "CRITICAL RULES:\n"
+        "1. Factual Accuracy: Be 100% faithful to the visual facts in the scene description. Do not invent details.\n"
+        "2. Word Count Constraints: Each caption MUST be strictly between 35 and 50 words long and consist of exactly 2 to 3 sentences.\n"
+        f"3. Format: You MUST return a JSON object with exactly these keys: {keys_str}. Do not output markdown code blocks, preamble, or formatting other than raw JSON.\n\n"
+        "STYLE GUIDELINES:\n"
+        f"{style_list_str}"
+    )
+    
+    user_prompt = f"Scene Description:\n{description}\n\nGenerate the captions in the requested JSON format."
+    
+    raw_content = ""
+    if fireworks_key:
+        client = OpenAI(base_url="https://api.fireworks.ai/inference/v1", api_key=fireworks_key)
+        extra_body = {"reasoning_effort": REASONING_EFFORT} if REASONING_EFFORT else {}
+        resp = _call_with_retry(
+            client.chat.completions.create,
+            model=TEXT_MODEL,
+            messages=[
+                {"role": "system", "content": system_instruction},
+                {"role": "user", "content": user_prompt}
+            ],
+            max_tokens=400,
+            temperature=0.7,
+            extra_body=extra_body
+        )
+        raw_content = _clean_reasoning(resp.choices[0].message.content or "")
+    else:
+        client = genai.Client(api_key=gemini_key)
+        resp = _call_with_retry(
+            client.models.generate_content,
+            model=GEMINI_MODEL,
+            contents=user_prompt,
+            config=types.GenerateContentConfig(
+                system_instruction=system_instruction,
+                temperature=0.7,
+                max_output_tokens=400,
+                response_mime_type="application/json"
+            )
+        )
+        raw_content = _clean_reasoning(resp.text or "")
+        
+    # Clean code fences or extra text around the JSON block
+    raw_content = raw_content.strip()
+    if raw_content.startswith("```"):
+        # remove starting ```json or ```
+        raw_content = re.sub(r"^```(?:json)?\s*", "", raw_content)
+        # remove ending ```
+        raw_content = re.sub(r"\s*```$", "", raw_content)
+        raw_content = raw_content.strip()
+        
+    try:
+        parsed = json.loads(raw_content)
+        # Ensure all requested styles are present
+        result = {}
+        for style in requested_styles:
+            if style in parsed and parsed[style]:
+                result[style] = str(parsed[style]).strip()
+            else:
+                raise KeyError(f"Style key '{style}' not found or empty in parsed JSON.")
+        return result
+    except Exception as e:
+        logger.warning(f"Failed to parse combined JSON captions: {e}. Raw content: {raw_content}")
+        raise ValueError("JSON parsing failed")
+
 def generate_video_captions(video_path: str, requested_styles: list) -> dict:
     """
     Extracts keyframes, base64 encodes them, queries vision model for scene description,
@@ -382,14 +476,28 @@ def generate_video_captions(video_path: str, requested_styles: list) -> dict:
         
     # 2. Styling Phase
     captions = {}
+    
+    # Try combined style inference first
+    try:
+        logger.info("Attempting combined single-request style inference...")
+        captions = run_combined_style_inference(description, requested_styles)
+        logger.info("Combined style inference completed successfully.")
+    except Exception as comb_err:
+        logger.warning(f"Combined style inference failed: {comb_err}. Falling back to sequential styling...")
+        captions = {}
+        
+    # Fallback/fill missing styles sequentially
     for style in requested_styles:
-        caption = ""
-        try:
-            caption = run_style_inference(style, description)
-            logger.info(f"Generated raw style '{style}': {caption}")
-        except Exception as e:
-            logger.error(f"Style generation failed for '{style}': {e}")
-            caption = STYLE_FALLBACKS.get(style, "A short video clip.")
+        if style in captions and captions[style]:
+            caption = captions[style]
+        else:
+            caption = ""
+            try:
+                caption = run_style_inference(style, description)
+                logger.info(f"Generated raw style '{style}': {caption}")
+            except Exception as e:
+                logger.error(f"Style generation failed for '{style}': {e}")
+                caption = STYLE_FALLBACKS.get(style, "A short video clip.")
             
         # Length verification & correction (25 - 60 words)
         word_count = len(caption.split())
