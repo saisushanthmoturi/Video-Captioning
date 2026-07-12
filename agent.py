@@ -103,22 +103,20 @@ def write_results_atomic(output_file: str, results: list):
     """
     Writes the results JSON file atomically to prevent partial writes and encoding issues.
     """
-    output_dir = os.path.dirname(output_file)
+    output_dir = os.path.dirname(output_file) or "."
     if output_dir:
         os.makedirs(output_dir, exist_ok=True)
         
     # ensure_ascii=True escapes non-ASCII characters to keep encoding clean of mojibake
     payload = json.dumps(results, ensure_ascii=True, indent=2)
-    # Write temp file in the container's local temp dir (always writable)
-    fd, tmp_path = tempfile.mkstemp(suffix=".tmp")
+    # Write temp file in the same directory as final output for atomic single-mount rename
+    fd, tmp_path = tempfile.mkstemp(dir=output_dir, suffix=".tmp")
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as f:
             f.write(payload)
             f.flush()
             os.fsync(f.fileno())
-        # Use shutil.move to safely handle copy-and-rename across volume boundaries
-        import shutil
-        shutil.move(tmp_path, output_file)
+        os.replace(tmp_path, output_file)
         logger.info(f"Results successfully written to {output_file}")
     finally:
         if os.path.exists(tmp_path):
@@ -128,14 +126,16 @@ def write_results_atomic(output_file: str, results: list):
                 pass
 
 def main():
-    # Define input and output paths
-    input_file = "/input/tasks.json"
-    if not os.path.exists(input_file):
+    # Load input and output paths from environment variables
+    input_file = os.getenv("INPUT_PATH", "/input/tasks.json")
+    output_file = os.getenv("OUTPUT_PATH", "/output/results.json")
+    
+    # Fallback to local files for testing if mount paths do not exist
+    if not os.path.exists(input_file) and input_file == "/input/tasks.json":
         input_file = "./input/tasks.json"
         
-    output_file = "/output/results.json"
-    output_dir = os.path.dirname(output_file)
-    if not os.path.exists(output_dir):
+    output_dir = os.path.dirname(output_file) or "."
+    if not os.path.exists(output_dir) and output_file == "/output/results.json":
         output_file = "./output/results.json"
 
     logger.info(f"Starting Video Captioning Agent...")
