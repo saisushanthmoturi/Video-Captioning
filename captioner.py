@@ -39,19 +39,21 @@ except ImportError:
 
 # Model Configuration
 VISION_MODEL = os.getenv("VISION_MODEL", "accounts/fireworks/models/kimi-k2p6")
-TEXT_MODEL = os.getenv("TEXT_MODEL", "accounts/fireworks/models/glm-5p2")
+TEXT_MODEL = os.getenv("TEXT_MODEL", "accounts/fireworks/models/gpt-oss-120b")
 REASONING_EFFORT = os.getenv("REASONING_EFFORT", "none")
 
 # Vision prompt instruction
 VISION_INSTRUCTION = (
-    "You are a meticulous visual analyst. The following images are keyframes sampled "
-    "in order from a single short video clip. Describe the clip as ONE neutral, factual "
-    "paragraph that a caption writer could rely on. Cover: the setting/location, the "
-    "main subjects, what actions or motion occur across the frames, the overall mood, "
-    "notable visual details (colors, weather, lighting), and any visible text, signage, "
-    "screens, or technology. Do not add humor, opinion, or invented details. If "
-    "something is unclear, describe what is plausibly shown without overstating. "
-    "English only."
+    "You are a precise visual analyst. The following images are representative keyframes "
+    "sampled in order from a single short video. Analyze the frames and provide a structured, "
+    "factual scene description covering all of the following categories:\n\n"
+    "1. **Scene / Setting**: Location, venue, or environment visible in the frames.\n"
+    "2. **Subjects**: People, animals, objects, positioning, and distinguishing features.\n"
+    "3. **Actions / Motion**: Activities, movements, or events taking place across the frames.\n"
+    "4. **Environment**: Indoor/outdoor, lighting, weather, or seasonal indicators.\n"
+    "5. **Key Visual Elements**: Colors, text/overlays, objects, or camera movements.\n\n"
+    "Do not write captions or taglines at this stage. Keep the report strictly neutral, factual, "
+    "and objective. Do not add humor, sarcasm, or opinions. English only."
 )
 
 # ---------------------------------------------------------------------------
